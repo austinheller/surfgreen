@@ -1,0 +1,80 @@
+@import 'bootstrap-reboot';
+
+$wrapper-max: 950px;
+$wrapper-wide-max: 1000px;
+$wrapper-width: 84vw;
+$margin-small: 1.5rem;
+
+@mixin small-screen-only {
+   @media (max-width: 800px) {
+	  @content;      
+   }
+}
+
+@mixin medium-screen {
+   @media (min-width: 801px) {
+	  @content;
+   }
+}
+
+@mixin large-screen {
+   @media (min-width: 1300px) {
+	  @content;
+   }
+}
+
+html {
+   font-size: 16px;
+   @include medium-screen {
+	  font-size: 19px;
+   }
+}
+
+body {
+   font-family: system-ui, sans-serif;
+   font-weight: 400;
+   background-color: white;
+}
+
+$gray: #706a63;
+$text-color: #312e2f;
+$link-color: #1abacd;
+
+.container {
+   max-width: $wrapper-max;
+   margin-left: auto;
+   margin-right: auto;
+   padding-left: $margin-small;
+   padding-right: $margin-small;
+   @include medium-screen {
+	  width: $wrapper-width;
+   }
+   &.wide {
+      max-width: $wrapper-wide-max;
+   }
+}
+
+main.container {
+   padding-top: 5rem;
+   p a, li a {
+      color: $link-color;
+      font-weight: 700;
+   }
+}
+
+#wrapper {
+   position: relative;
+   z-index: 2;
+   background-color: white;
+}
+
+.full-width {
+   width: 100vw;
+	max-width: 100vw;
+	margin-left: calc(50% - 50vw);
+}
+
+p {
+   font-size: 1.15rem;
+   color: #413b3d;
+}

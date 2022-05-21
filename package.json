@@ -1,0 +1,41 @@
+{
+  "name": "surfgreen",
+  "version": "2.2.2",
+  "description": "A really simple static site generator",
+  "main": "./src/index.js",
+  "type": "module",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "",
+    "develop": "SURFGREEN_MODE=development SURFGREEN_WEBPACK_LOCATION=./test/webpack.cjs SURFGREEN_ACTION=start_server node ./src/index.js",
+    "dev": "npm run develop",
+    "buildsite": "webpack --config ./test/webpack.cjs && SURFGREEN_MODE=development SURFGREEN_ACTION=build node ./src/index.js",
+    "bs": "npm run buildsite",
+    "build": "webpack --config ./webpack.config.cjs"
+  },
+  "author": "Austin Heller",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.17.2",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "babel-loader": "^8.2.3",
+    "connect-livereload": "^0.6.1",
+    "css-loader": "^6.6.0",
+    "express": "^4.17.2",
+    "file-regex": "^3.1.0",
+    "livereload": "^0.9.3",
+    "marked": "^4.0.12",
+    "mini-css-extract-plugin": "^2.5.3",
+    "path": "^0.12.7",
+    "sass": "^1.49.7",
+    "sass-loader": "^12.4.0",
+    "webpack": "^5.68.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-middleware": "^5.3.1",
+    "webpack-hot-middleware": "^2.25.1"
+  },
+  "devDependencies": {}
+}
