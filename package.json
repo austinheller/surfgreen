@@ -1,6 +1,6 @@
 {
   "name": "surfgreen",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "A really simple static site generator",
   "main": "./src/index.js",
   "type": "module",
