@@ -1,6 +1,6 @@
 {
   "name": "surfgreen",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "A really simple static site generator",
   "main": "./src/index.js",
   "type": "module",
@@ -9,9 +9,9 @@
   },
   "scripts": {
     "start": "",
-    "develop": "SURFGREEN_MODE=development SURFGREEN_WEBPACK_LOCATION=./test/webpack.cjs SURFGREEN_ACTION=start_server node ./src/index.js",
+    "develop": "SURFGREEN_MODE=development SURFGREEN_ACTION=start_server node ./test/index.js",
     "dev": "npm run develop",
-    "buildsite": "webpack --config ./test/webpack.cjs && SURFGREEN_MODE=development SURFGREEN_ACTION=build node ./src/index.js",
+    "buildsite": "SURFGREEN_MODE=development SURFGREEN_ACTION=build node ./test/index.js",
     "bs": "npm run buildsite",
     "build": "webpack --config ./webpack.config.cjs"
   },

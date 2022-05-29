@@ -12,25 +12,31 @@ const app = express();
 const port = 3000;
 
 
-export default async function startServer() {
+export default async function startServer(config) {
    
+   // Get site data
    const siteData = await getSiteData();
    if(! siteData) {
       console.error(`Surfgreen quit because site data could not be retrieved.\n`);
       return;
    }
-   const webpackRelativeLocation = process.env.SURFGREEN_WEBPACK_LOCATION ? process.env.SURFGREEN_WEBPACK_LOCATION : './webpack.cjs';
-   const webpackLocation = path.resolve(process.env.PWD, webpackRelativeLocation);
-   let webpackConfig = false;
-   try {
-      webpackConfig = await import(webpackLocation);   
-   }
-   catch {
-      console.warn('Note: Webpack is installed, but a configuration file was not found, so Surfgreen will not bundle any assets.');
-   }
-   let compiler = false;
-   if(webpackConfig !== false) {
-      compiler = webpack(webpackConfig.default);
+   
+   // Webpack
+   let webpackLoaded = false, compiler = false;
+   if( config.webpack === true ) {
+      const webpackRelativeLocation = config.webpackLocation;
+      const webpackLocation = path.resolve(process.env.PWD, webpackRelativeLocation);
+      let webpackConfig = false;
+      try {
+         webpackConfig = await import(webpackLocation);   
+      }
+      catch {
+         console.warn('Note: Webpack is installed and enabled, but a configuration file was not found. Surfgreen will not bundle any assets.');
+      }
+      if(webpackConfig !== false) {
+         compiler = webpack(webpackConfig.default);
+         webpackLoaded = true;
+      }
    }
 
    // Start livereload
@@ -41,12 +47,11 @@ export default async function startServer() {
    liveReloadServer.watch(path.resolve(siteData.sitePath));
    app.use(connectLivereload());
 
-   if( compiler !== false ) {
+   if(config.webpack === true && webpackLoaded === true) {
       app.use(webpackDevMiddleware(compiler, {
          publicPath: siteData.sitePath,
          writeToDisk: true
       }));
-   
       app.use(webpackHotMiddleware(compiler));
    }
 

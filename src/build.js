@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import FindFiles from 'file-regex';
 import getSiteData from './createPage/getSiteData.js';
 import createPage from './createPage/createPage.js';
+import webpack from 'webpack';
 
 function copyFileSync(source, target) {
 
@@ -71,12 +72,31 @@ const getOutputFileName = function (slug, dir) {
    return name;
 }
 
-export default async function createPages() {
+export default async function createPages(config) {
+   // Get site data
    const siteData = await getSiteData();
    if(! siteData) {
       console.error(`Surfgreen quit because site data could not be retrieved.\n`);
       return;
    }
+   
+   // Webpack
+   if( config.webpack === true ) {
+      const webpackRelativeLocation = config.webpackLocation;
+      const webpackLocation = path.resolve(process.env.PWD, webpackRelativeLocation);
+      let webpackConfig = false;
+      try {
+         webpackConfig = await import(webpackLocation);   
+      }
+      catch {
+         console.warn('Note: Webpack is installed and enabled, but a configuration file was not found. Surfgreen will not bundle any assets.');
+      }
+      let compiler = false;
+      if(webpackConfig !== false) {
+         compiler = webpack(webpackConfig.default);
+      }
+   }
+   
    const siteSrc = siteData.sitePath;
    // Copy site directory
    const buildDir = siteData.repo.absolutePath + '/build';
