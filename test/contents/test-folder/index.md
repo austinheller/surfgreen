@@ -1,4 +1,5 @@
 title: Index Page
+random: yes
 
 ~~
 

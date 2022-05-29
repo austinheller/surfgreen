@@ -26,3 +26,5 @@ nope
 ~~~
 
 !}}
+
+{{#query for="random" value="yes" block="query-test"}}

@@ -1,4 +1,5 @@
 title: Zeta's Subpage
+random: no
 
 ~~
 

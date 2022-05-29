@@ -68,7 +68,7 @@ function parseBlock(props) {
    // Custom blocks
    //
    // Get block from block definitions
-   if(! blockContents) {
+   if(blockContents === false) {
       blockDefs.forEach( thisDef => {
          if(blockProps['_blockName'] === thisDef.name) {
             blockDef = thisDef;

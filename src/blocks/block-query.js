@@ -7,20 +7,32 @@ export default function runQueryBlock(queryData, siteData) {
    const allPages = siteData.pages;
    // Collect pages
    let pages = [];
-   if (queryData.hasOwnProperty('for')) {
+   if ( queryData.hasOwnProperty('for') ) {
+      const queryVar = queryData['for'];
       allPages.forEach(page => {
          const pageData = getPageData({
             ...page
          });
-         if (pageData.meta.hasOwnProperty('type')) {
-            if (pageData.meta.type === queryData.for) {
+         if ( pageData.meta.hasOwnProperty(queryVar) ) {
+            if( queryData.hasOwnProperty('value') ) {
+               const valueToCheck = queryData['value'];
+               if (pageData.meta[queryVar] === valueToCheck) {
+                  pages.push(pageData);
+               }
+            }
+            else {
                pages.push(pageData);
             }
          }
       });
    }
-   else {
-      pages = allPages;
+   else { // all pages
+      allPages.forEach( page => {
+         const pageData = getPageData({
+            ...page
+         });
+         pages.push(pageData);
+      } )
    }
    // Sort
    if (queryData.hasOwnProperty('sortby') && typeof queryData['sortby'] === "string") {
@@ -75,27 +87,32 @@ export default function runQueryBlock(queryData, siteData) {
          blockDef = thisDef;
       }
    })
-   pages.forEach( page => {
-      let template = blockDef.contents;
-      template = parseBlocks({
-         contents: template,
-         siteData: siteData
-      });
-      template = parseConditions({
-         contents: template,
-         meta: {
-            content: page.contents,
-            ...page.meta
-         }
-      });
-      template = parseStrings({
-         contents: template,
-         meta: {
-            content: page.contents,
-            ...page.meta
-         }
-      });
-      queryBlockOutput += template + '\n\n';
-   } )
+   if(! blockDef) {
+      console.warn(`A query specified a block called ${queryData.block}, but this block wasn't found. Skipping query.`);
+   }
+   else {
+      pages.forEach( page => {
+         let template = blockDef.contents;
+         template = parseBlocks({
+            contents: template,
+            siteData: siteData
+         });
+         template = parseConditions({
+            contents: template,
+            meta: {
+               content: page.contents,
+               ...page.meta
+            }
+         });
+         template = parseStrings({
+            contents: template,
+            meta: {
+               content: page.contents,
+               ...page.meta
+            }
+         });
+         queryBlockOutput += template + '\n\n';
+      } )
+   }
    return queryBlockOutput;
 }
