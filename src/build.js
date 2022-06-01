@@ -31,16 +31,14 @@ function copyFolderRecursiveSync(source, target, inSource) {
    var targetFolder = path.join(target, path.basename(source));
    if (!fs.existsSync(targetFolder) && !inSource) {
       fs.mkdirSync(targetFolder);
-   }
-   else {
+   } else {
       targetFolder = targetFolder.replace('/build/contents', '/build');
    }
 
    // Copy
    if (fs.lstatSync(source).isDirectory()) {
       files = fs.readdirSync(source);
-      //  console.log(files);
-      files.forEach(function (file) {
+      files.forEach(function(file) {
          var curSource = path.join(source, file);
          if (fs.lstatSync(curSource).isDirectory()) {
             copyFolderRecursiveSync(curSource, targetFolder, false);
@@ -53,7 +51,7 @@ function copyFolderRecursiveSync(source, target, inSource) {
    }
 }
 
-const getOutputFileName = function (slug, dir) {
+const getOutputFileName = function(slug, dir) {
    let name = slug;
    // Trim leading slash
    if (dir.charAt === '/') {
@@ -65,8 +63,7 @@ const getOutputFileName = function (slug, dir) {
    // Evaluate it, baby
    if (slug === lastDir || slug === 'home') {
       name = 'index';
-   }
-   else {
+   } else {
       name = slug;
    }
    return name;
@@ -75,39 +72,42 @@ const getOutputFileName = function (slug, dir) {
 export default async function createPages(config) {
    // Get site data
    const siteData = await getSiteData();
-   if(! siteData) {
+   if (!siteData) {
       console.error(`Surfgreen quit because site data could not be retrieved.\n`);
       return;
    }
-   
+
    // Webpack
-   if( config.webpack === true ) {
+   if (config.webpack === true) {
       const webpackRelativeLocation = config.webpackLocation;
       const webpackLocation = path.resolve(process.env.PWD, webpackRelativeLocation);
       let webpackConfig = false;
       try {
-         webpackConfig = await import(webpackLocation);   
-      }
-      catch {
+         webpackConfig = await import(webpackLocation);
+      } catch {
          console.warn('Note: Webpack is installed and enabled, but a configuration file was not found. Surfgreen will not bundle any assets.');
       }
       let compiler = false;
-      if(webpackConfig !== false) {
+      if (webpackConfig !== false) {
          compiler = webpack(webpackConfig.default);
       }
    }
-   
-   const siteSrc = siteData.sitePath;
-   // Copy site directory
+
+   // Create build directory if it doesn't exist   
    const buildDir = siteData.repo.absolutePath + '/build';
+   if (!fs.existsSync(buildDir)) {
+      fs.mkdirSync(buildDir);
+   }
+   // Copy site directory
+   const siteSrc = siteData.sitePath;
    copyFolderRecursiveSync(siteSrc, buildDir, true);
    // Get markdown files, create pages
    const pages = await FindFiles(siteSrc, /\.md$/, 5);
-   pages.forEach(async function (page) {
+   pages.forEach(async function(page) {
       const pageSlug = page.file.replace(/\.(\w+_*-*?)$/g, '');
       const pageBuild = await createPage(pageSlug, page.dir);
-      if( pageBuild.meta.hasOwnProperty('createPage') ) {
-         if( pageBuild.meta.createPage === 'false' ) {
+      if (pageBuild.meta.hasOwnProperty('createPage')) {
+         if (pageBuild.meta.createPage === 'false') {
             return;
          }
       }
@@ -118,7 +118,7 @@ export default async function createPages(config) {
       const buildDir = page.dir.replace(siteData.sitePath, siteData.buildPath) + '/' + fileName + '.html';
       fs.writeFileSync(buildDir, pageHTML);
    })
-   
+
    console.log(`Hang ten! Your site has completed building, and can be found in your site's /build folder.\n\nIf you're deploying this site from a hosting service, make sure the public root is also set to /build.\n\nHappy surfing!\n\n`);
-   
+
 }
