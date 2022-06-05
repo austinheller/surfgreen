@@ -69,7 +69,7 @@ const getOutputFileName = function(slug, dir) {
    return name;
 }
 
-export default async function createPages(config) {
+export default async function buildPages(config) {
    // Get site data
    const siteData = await getSiteData();
    if (!siteData) {
@@ -85,11 +85,17 @@ export default async function createPages(config) {
       try {
          webpackConfig = await import(webpackLocation);
       } catch {
-         console.warn('Note: Webpack is installed and enabled, but a configuration file was not found. Surfgreen will not bundle any assets.');
+         console.warn('Note: Webpack is installed and enabled, but a configuration file was either invalid or not found. Surfgreen will not bundle any assets.\n\n');
       }
       let compiler = false;
       if (webpackConfig !== false) {
-         compiler = webpack(webpackConfig.default);
+         try {
+            compiler = webpack(webpackConfig.default);
+            compiler.run();
+         } catch (e) {
+            console.error('Error: The Webpack compiler failed to run. Make sure your configuration file is valid.');
+            console.error(e);
+         }
       }
    }
 
